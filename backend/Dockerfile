@@ -4,7 +4,7 @@ FROM golang:1.24.2-alpine
 WORKDIR /app
 
 # --- dodajemy git i certyfikaty ---
-RUN apk add --no-cache git ca-certificates gcc musl-dev sqlite-dev
+RUN apk add --no-cache ca-certificates gcc git musl-dev sqlite-dev
 
 ENV CGO_ENABLED=1
 
