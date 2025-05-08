@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
     "net/http"
     "strconv"
 
@@ -56,7 +57,9 @@ func initDB() {
     if err != nil {
         panic("failed to connect database")
     }
-    DB.AutoMigrate(&Category{}, &Product{}, &Cart{}, &Payment{}, &PaymentItem{})
+    if err := DB.AutoMigrate(&Category{}, &Product{}, &Cart{}, &Payment{}, &PaymentItem{}); err != nil {
+		log.Fatalf("AutoMigrate failed: %v", err)
+	}	
 }
 
 func main() {
