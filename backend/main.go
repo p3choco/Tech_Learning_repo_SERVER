@@ -11,6 +11,10 @@ import (
     "gorm.io/gorm"
 )
 
+
+const ProductByIDPath = "/products/:id"
+const ProductNotFoundStr = "Product not found"
+
 var DB *gorm.DB
 
 type Category struct {
@@ -73,10 +77,10 @@ func main() {
     }))
 
     e.GET("/products", getProducts)
-    e.GET("/products/:id", getProductByID)
+    e.GET(ProductByIDPath, getProductByID)
     e.POST("/products", createProduct)
-    e.PUT("/products/:id", updateProduct)
-    e.DELETE("/products/:id", deleteProduct)
+    e.PUT(ProductByIDPath, updateProduct)
+    e.DELETE(ProductByIDPath, deleteProduct)
     e.GET("/products/filter", filterProducts)
 
     e.GET("/carts", getCarts)
@@ -104,7 +108,7 @@ func getProductByID(c echo.Context) error {
     id, _ := strconv.Atoi(c.Param("id"))
     var product Product
     if err := DB.Preload("Category").First(&product, id).Error; err != nil {
-        return c.JSON(http.StatusNotFound, echo.Map{"message": "Product not found"})
+        return c.JSON(http.StatusNotFound, echo.Map{"message": ProductNotFoundStr})
     }
     return c.JSON(http.StatusOK, product)
 }
@@ -124,7 +128,7 @@ func updateProduct(c echo.Context) error {
     id, _ := strconv.Atoi(c.Param("id"))
     var product Product
     if err := DB.First(&product, id).Error; err != nil {
-        return c.JSON(http.StatusNotFound, echo.Map{"message": "Product not found"})
+        return c.JSON(http.StatusNotFound, echo.Map{"message": ProductNotFoundStr})
     }
     if err := c.Bind(&product); err != nil {
         return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
@@ -139,7 +143,7 @@ func deleteProduct(c echo.Context) error {
     id, _ := strconv.Atoi(c.Param("id"))
     var product Product
     if err := DB.First(&product, id).Error; err != nil {
-        return c.JSON(http.StatusNotFound, echo.Map{"message": "Product not found"})
+        return c.JSON(http.StatusNotFound, echo.Map{"message": ProductNotFoundStr})
     }
     if err := DB.Delete(&product).Error; err != nil {
         return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
